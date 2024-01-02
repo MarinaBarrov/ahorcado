@@ -1,21 +1,25 @@
 let randomWord;
+let wordCopy;
 let lives = 6;
 let wrongChars = new Set();
 
 window.addEventListener("load", (e) => {
   fetchWord().then((response) => {
-    randomWord = response.normalize("NFC");
+    randomWord = response;
+    wordCopy = response;
+    console.log(randomWord);
     renderWordPlaceHolder(randomWord);
-});
+  });
 });
 
 window.addEventListener("keypress", (e) => {
-    let keyPress = e.key;
-    if (!randomWord.includes(keyPress)) {
-        subtractLive();
-        addIncorrectChar(keyPress);
+  let keyPress = e.key;
+  if (!randomWord.includes(keyPress)) {
+    subtractLive();
+    addIncorrectChar(keyPress);
   }
   renderKeyPress(keyPress);
+  checkWordCompletion(keyPress);
 });
 
 /*
@@ -61,6 +65,13 @@ function renderKeyPress(char) {
   }
 }
 
+function checkWordCompletion(char) {
+  wordCopy = wordCopy.replaceAll(char, "");
+  if (wordCopy.length == 0) {
+    window.location.href = "winner.html";
+  }
+}
+
 function subtractLive() {
   lives--;
   if (lives > 0) {
@@ -73,7 +84,7 @@ function subtractLive() {
         element.classList.add("fa-regular");
       });
   } else {
-    window.localStorage.setItem("randomWord", randomWord)
-    window.location.href="loser.html"
+    window.localStorage.setItem("randomWord", randomWord);
+    window.location.href = "loser.html";
   }
 }
